@@ -10,6 +10,26 @@ import "tailwindcss/tailwind.css";
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <title>Astro</title>
+
+    <meta property="og:title" content="Guess the Date - Art Quiz" />
+    <meta
+      property="og:description"
+      content="Test your knowledge of art history by guessing the creation dates of artworks. Challenge yourself with captivating images and see how well you fare."
+    />
+    <!-- <meta
+      property="og:image"
+      content="https://example.com/path/to/your/image.jpg"
+    /> -->
+    <meta property="og:image:alt" content="Artwork Image" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://art.tricked.dev" />
+    <meta property="og:site_name" content="Guess the Date" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="article:author" content="https://github.com/tricked-dev" />
+    <meta property="article:section" content="Entertainment" />
+    <meta property="article:tag" content="Art, Quiz, Culture" />
+    <link rel="canonical" href="https://art.tricked.dev/" />
+    <!-- Replace "https://example.com/path/to/your/image.jpg" with the actual URL of the artwork image -->
   </head>
   <body>
     <Main client:load />

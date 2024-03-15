@@ -20,3 +20,4 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 data/5k.json
+data/50k.json

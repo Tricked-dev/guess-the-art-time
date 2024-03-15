@@ -6,7 +6,9 @@
   const questionCount = 20;
 
   onMount(async () => {
-    const req = await fetch("/encoded.bin").then((r) => r.arrayBuffer());
+    const req = await fetch(
+      `/data/encoded-${(Math.random() * 10) | 0}.bin`
+    ).then((r) => r.arrayBuffer());
 
     const res = decode(new Uint8Array(req));
 

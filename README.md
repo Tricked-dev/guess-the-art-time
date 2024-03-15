@@ -2,9 +2,15 @@
 
 A simple website that uses data sourced from getty to make a little quiz about the time a painting / art piece was made.
 
+## Features
+
+- more than 40k questions!
+- End results
+- Early quitting
+
 ## Downloading the data
 
-`curl https://www.getty.edu/art/collection/api/search?from=0&size=5000&open_content=true > data/5k.json`
+`curl "https://www.getty.edu/art/collection/api/search?from=5000&size=50000&open_content=true" > data/50k.json`
 
 > ![TIP]
 > Only do this if you need to modify `transform.ts` so that getty wont limit this
