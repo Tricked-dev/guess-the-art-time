@@ -10,8 +10,11 @@
 
     const res = decode(new Uint8Array(req));
 
-    const items = getRandomNonDuplicateItems(res, questionCount);
-
+    const items = getRandomParsableArray(res, questionCount);
+    const possibleAnswerItems = [
+      ...items,
+      ...getRandomParsableArray(res, questionCount * 20),
+    ];
     // item:
     // index 0: quizz question (date)
     // index 1: name
@@ -27,7 +30,12 @@
           ...getRandomNonDuplicateItems(
             [
               ...new Set(
-                items.filter((i) => i[1] !== item[1]).map((x) => x[0].trim())
+                filterDates(
+                  item[0],
+                  possibleAnswerItems
+                    .filter((i) => i[1] !== item[1])
+                    .map((x) => x[0].trim())
+                )
               ),
             ],
             3
@@ -41,6 +49,46 @@
 
     quizzQuestions = [...quizzQuestions];
   });
+
+  function filterDates(primaryDate, otherDates) {
+    const [primaryStartDate, primaryEndDate] = parseDateRange(primaryDate);
+
+    const filteredOtherDates = otherDates.filter((date) => {
+      const [start, end] = parseDateRange(date);
+      return end < primaryStartDate || start > primaryEndDate;
+    });
+
+    return filteredOtherDates;
+  }
+
+  function parseDateRange(dateStr) {
+    const patterns = [
+      /^(\d{4})$/, // e.g., 1885
+      /^about (\d{4})\u2013(\d{4})$/, // e.g., about 1855–1875
+      /^about (\d{4})$/, // e.g., about 1865
+      /^(\d{4})s$/, // e.g., 1860s
+      /^about (\d{4})0s$/, // e.g., about 1850s
+      /^about (\d{4})s$/, // e.g., about 1850s
+      /^A\.D\. (\d{3})\u2013(\d{3})$/, // e.g., A.D. 251–253
+      /^about (\d{4})\u2013(\d{4})0s$/, // e.g., about 1875–1890s
+      /^about (\d{4})\u2013(\d{4})s$/, // e.g., about 1875–1890s
+      /^about (\d{3,4})$/, // e.g., about 826
+      /^(\d{4})\u2013(\d{4})$/, // e.g., 1907–1943
+      /^(\d{3,4})s\u2013(\d{3,4})s$/, // e.g., 1907–1943
+    ];
+
+    for (const pattern of patterns) {
+      const match = dateStr.match(pattern);
+      if (match) {
+        const [_, start, end] = match;
+        const startDate = start ? parseInt(`${start.padEnd(4, "0")}`) : null;
+        const endDate = end ? parseInt(`${end.padEnd(4, "0")}`) : startDate;
+        return [startDate, endDate];
+      }
+    }
+
+    return [null, null];
+  }
 
   function shuffleArray(arr) {
     const shuffledArray = arr.slice();
@@ -57,6 +105,14 @@
   function getRandomNonDuplicateItems(arr, numItems) {
     const shuffledArray = shuffleArray(arr);
     return shuffledArray.slice(0, numItems);
+  }
+
+  function getRandomParsableArray(arr, numItems) {
+    const shuffledArray = shuffleArray(arr).slice(0, numItems * 5);
+    const filtered = shuffledArray.filter(
+      (x) => parseDateRange(x[0])[0] != null
+    );
+    return filtered.slice(0, numItems);
   }
 
   let answers = [];
