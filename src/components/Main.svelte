@@ -282,7 +282,7 @@
   </div>
 </main>
 
-<footer class="max-w-[50rem] mx-auto text-gray-500">
+<footer class="max-w-[50rem] mx-auto text-gray-500 group">
   <p>
     All images and data is sourced from <a
       href="https://getty.edu"
@@ -295,6 +295,13 @@
       href="https://github.com/tricked-dev"
       target="_blank"
       rel="noreferrer">Tricked-dev</a
+    >
+  </p>
+  <p class="group-hover:opacity-100 opacity-0 duration-500">
+    Source code on <a
+      href="https://github.com/Tricked-dev/guess-the-art-time"
+      target="_blank"
+      rel="noreferrer">GitHub</a
     >
   </p>
 </footer>
