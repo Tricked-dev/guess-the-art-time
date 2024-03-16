@@ -1,6 +1,6 @@
 <script>
   import { decode } from "cborg";
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   let quizzQuestions = [];
 
   const questionCount = 20;
@@ -202,6 +202,7 @@
   }
 
   let confirm = false;
+  let btn;
 </script>
 
 <main
@@ -254,13 +255,19 @@
     class:hidden={questionIndex == questionCount}
   >
     {#each quizzQuestions as q, index}
-      {#if index === questionIndex}
+      {#if index === questionIndex || index == questionIndex + 1 || index == questionIndex + 2}
+        {@const active = index === questionIndex}
+        <!-- This is the only reliable way i know how to preload the images without doing some annoying js stuff -->
+        <!-- Absolute makes it so it doesnt move the other images,  pointer-events-none makes it so it doesn't get clicked aka block buttons, and opacity hides it -->
         <img
           src={q.image}
           alt={q.name}
           fetchpriority="high"
           loading="eager"
           class="bg-gray-300 rounded-xl drop-shadow-lg"
+          class:absolute={!active}
+          class:pointer-events-none={!active}
+          class:opacity-0={!active}
         />
       {/if}
     {/each}
@@ -306,7 +313,8 @@
     <div class="py-6 min-h-14 flex">
       <button
         type="button"
-        on:click={() => {
+        bind:this={btn}
+        on:click={async () => {
           if (!picked && !confirm) return (confirm = true);
           if (!picked && confirm) return (questionIndex = questionCount);
           confirm = false;
@@ -320,6 +328,25 @@
 
           picked = "";
           questionIndex++;
+
+          // makes it so the next image is on screen, the tick has happend
+          await tick();
+
+          // move the next button into view
+          const viewportHeight = window.innerHeight;
+          const divTop = btn.getBoundingClientRect().top;
+          const divBottom = btn.getBoundingClientRect().bottom;
+
+          if (divTop >= 0 && divBottom <= viewportHeight) {
+            return;
+          }
+
+          const scrollDistance = divBottom - viewportHeight + 10;
+
+          window.scrollBy({
+            top: scrollDistance,
+            behavior: "smooth",
+          });
         }}
         class="text-white {!picked
           ? 'bg-red-500 hover:bg-red-700'

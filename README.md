@@ -26,7 +26,6 @@ Then edit `src/components/main.svelte`
 
 ## Todo
 
-- fix layout shifts with images loading
 - maybe proxy images or something i have a feeling that getty wont like this
 - create some global statistics or something so that you can compare your skill to others
 - maybe make it multiplayer
