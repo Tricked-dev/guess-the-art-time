@@ -31,3 +31,4 @@ Then edit `src/components/main.svelte`
 - create some global statistics or something so that you can compare your skill to others
 - maybe make it multiplayer
 - A main screen giving some info about the game and possibly other gamemodes
+- Branding?, we could use a nice icon and a image for the readme / twitter embed
