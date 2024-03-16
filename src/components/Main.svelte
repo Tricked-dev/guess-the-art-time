@@ -158,7 +158,7 @@
 <main
   class="max-w-[50rem] mx-auto mt-4 block p-6 bg-gray-100 border border-gray-200 rounded-lg shadow"
 >
-  <h1 class="text-center text-gray-900 font-bold text-xl">Guess the date</h1>
+  <h1 class="text-center text-gray-800 font-bold text-3xl">Guess the date</h1>
 
   <div class="min-h-96 p-2" class:hidden={questionIndex !== questionCount}>
     <h2 class="text-center text-xl text-bold">Results</h2>
@@ -201,7 +201,7 @@
   </div>
 
   <div
-    class="flex justify-center min-h-96 p-2"
+    class="flex justify-center min-h-96 p-6"
     class:hidden={questionIndex == questionCount}
   >
     {#each quizzQuestions as q, index}
@@ -211,7 +211,7 @@
           alt={q.name}
           fetchpriority="high"
           loading="eager"
-          class="bg-gray-300 rounded-xl"
+          class="bg-gray-300 rounded-xl drop-shadow-lg"
         />
       {/if}
     {/each}
@@ -242,7 +242,7 @@
                     ? "bg-green-500 text-white"
                     : picked == option
                       ? "bg-red-500 text-white"
-                      : "bg-white hover:bg-gray-100 hover:text-gray-600"
+                      : "bg-white drop-shadow-md hover:filter-none hover:shadow-inner hover:text-gray-600"
                 }
             `}
           >
@@ -254,7 +254,7 @@
       {/each}
     </ul>
 
-    <div class="py-2 min-h-14 flex">
+    <div class="py-6 min-h-14 flex">
       <button
         type="button"
         on:click={() => {
@@ -274,7 +274,7 @@
         }}
         class="text-white {!picked
           ? 'bg-red-500 hover:bg-red-700'
-          : 'bg-blue-700 hover:bg-blue-800'} w-32 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+          : 'bg-blue-700 hover:bg-blue-800'} w-32 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 drop-shadow-md"
         >{picked ? "Continue" : confirm ? "You sure" : "Give Up"}</button
       >
       <p class="text-right ml-auto">
