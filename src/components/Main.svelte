@@ -1,22 +1,46 @@
 <script>
-  import { encode, decode } from "cborg";
+  import { decode } from "cborg";
   import { onMount } from "svelte";
   let quizzQuestions = [];
 
   const questionCount = 20;
 
+  let dateCache = {};
+
+  async function fetchData(retries = 5) {
+    try {
+      const req = await fetch(
+        `/data/encoded-${(Math.random() * 10) | 0}.bin`
+      ).then((r) => r.arrayBuffer());
+
+      return decode(new Uint8Array(req));
+    } catch (e) {
+      console.log("Error while retrieving data");
+      if (retries > 0) {
+        console.log("Retrying...");
+        return fetchData(retries - 1);
+      }
+    }
+  }
+
   onMount(async () => {
-    const req = await fetch(
-      `/data/encoded-${(Math.random() * 10) | 0}.bin`
-    ).then((r) => r.arrayBuffer());
+    const res = await fetchData();
+    const itemSet = getRandomParsableArray(res, questionCount * 50);
 
-    const res = decode(new Uint8Array(req));
+    // There is 20x of things from the 18th century than from anything else so we do this to make some more variation
+    const grouped = groupHighsAndLows(itemSet).filter((x) => x);
 
-    const items = getRandomParsableArray(res, questionCount);
-    const possibleAnswerItems = [
-      ...items,
-      ...getRandomParsableArray(res, questionCount * 20),
-    ];
+    const inclusiveList = [];
+
+    for (let list of grouped) {
+      if (!list) continue;
+      inclusiveList.push(
+        ...shuffleArray(list).slice(0, (questionCount / grouped.length) * 10)
+      );
+    }
+
+    const items = shuffleArray(inclusiveList).slice(0, questionCount);
+
     // item:
     // index 0: quizz question (date)
     // index 1: name
@@ -34,7 +58,7 @@
               ...new Set(
                 filterDates(
                   item[0],
-                  possibleAnswerItems
+                  inclusiveList
                     .filter((i) => i[1] !== item[1])
                     .map((x) => x[0].trim())
                 )
@@ -50,7 +74,28 @@
     }
 
     quizzQuestions = [...quizzQuestions];
+
+    // clear date cache to save some memory
+    dateCache = {};
   });
+
+  function groupHighsAndLows(array) {
+    const grouped = [];
+
+    array.forEach(([date, ...rest]) => {
+      const [low, high] = parseDateRange(date);
+      const middle = Math.floor((low + high) / 2);
+      const group = Math.floor(middle / 100);
+
+      if (!grouped[group]) {
+        grouped[group] = [];
+      }
+
+      grouped[group].push([date, ...rest]);
+    });
+
+    return grouped;
+  }
 
   function filterDates(primaryDate, otherDates) {
     const [primaryStartDate, primaryEndDate] = parseDateRange(primaryDate);
@@ -64,6 +109,9 @@
   }
 
   function parseDateRange(dateStr) {
+    if (dateCache[dateStr]) {
+      return dateCache[dateStr];
+    }
     const patterns = [
       /^(\d{4})$/, // e.g., 1885
       /^about (\d{4})\u2013(\d{4})$/, // e.g., about 1855–1875
@@ -83,8 +131,9 @@
       const match = dateStr.match(pattern);
       if (match) {
         const [_, start, end] = match;
-        const startDate = start ? parseInt(`${start.padEnd(4, "0")}`) : null;
-        const endDate = end ? parseInt(`${end.padEnd(4, "0")}`) : startDate;
+        const startDate = start ? parseInt(`${start}`) : null;
+        const endDate = end ? parseInt(`${end}`) : startDate;
+        dateCache[dateStr] = [startDate, endDate];
         return [startDate, endDate];
       }
     }
