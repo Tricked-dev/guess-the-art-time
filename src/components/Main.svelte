@@ -50,7 +50,7 @@
       let answers = [...items];
       answers.splice(index, 1);
       quizzQuestions.push({
-        image: `https://media.getty.edu/iiif/image/${item[2]}/full/!500,500/0/default.jpg`,
+        image: `https://media.getty.edu/iiif/image/${item[2]}/full/!600,600/0/default.webp`,
         name: item[1],
         options: shuffleArray([
           ...getRandomNonDuplicateItems(
@@ -251,7 +251,7 @@
   </div>
 
   <div
-    class="flex justify-center min-h-96 p-6"
+    class="flex justify-center min-h-96 p-6 max-h-[28rem]"
     class:hidden={questionIndex == questionCount}
   >
     {#each quizzQuestions as q, index}
